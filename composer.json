@@ -1,0 +1,15 @@
+{
+    "name": "kurikutsu/curl-handler",
+    "description": "Lightweight PHP Curl handler",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andres Spak",
+            "email": "andresspak@gmail.com"
+        }
+    ],
+    "require": {
+        "ext-curl": "*",
+        "ext-json": "*"
+    }
+}
