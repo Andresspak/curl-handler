@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class CurlHandler
+ *
+ * @property string $host
+ * @property array $queue
+ */
 class CurlHandler
 {
     protected $host;
@@ -23,7 +28,6 @@ class CurlHandler
      */
     public function get($path = '', $headers = [], $params = [])
     {
-        $path .= (strpos('?', $path) === false ? '?' : '&') . http_build_query($params);;
         return $this->request($this->host . $path, 'GET', $headers, $params);
     }
 
@@ -63,9 +67,15 @@ class CurlHandler
         return $this->request($this->host . $path, 'PATCH', $headers, $params);
     }
 
-    public function queue($path, $method, $headers, $params)
+    /**
+     * @param string $path
+     * @param string $method
+     * @param array $headers
+     * @param array $params
+     */
+    public function queue($path = '/', $method = 'GET', $headers = [], $params = [])
     {
-        $this->queue[] = $this->initialize($path, $method, $headers, $params);
+        $this->queue[] = $this->initialize($this->host . $path, $method, $headers, $params);
     }
 
     /**
@@ -81,17 +91,16 @@ class CurlHandler
 
         $active = null;
         do {
-            curl_multi_exec($cmh, $active);
-        } while ($active);
+            $status = curl_multi_exec($cmh, $active);
 
-        foreach ($this->queue as $ch) {
-            curl_multi_remove_handle($cmh, $ch);
-        }
+            if ($active) {
+                curl_multi_select($cmh);
+            }
+        } while ($active && $status == CURLM_OK);
 
-        curl_multi_close($cmh);
-
-        return array_map(function ($ch) {
+        $responses = array_map(function ($ch) {
             $response = curl_multi_getcontent($ch);
+
             $responseHeaderSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
             $responseHeaders = substr($response, 0, $responseHeaderSize);
             $responseBody = substr($response, $responseHeaderSize);
@@ -101,6 +110,14 @@ class CurlHandler
                 'data' => json_decode($responseBody),
             ];
         }, $this->queue);
+
+        foreach ($this->queue as $ch) {
+            curl_multi_remove_handle($cmh, $ch);
+        }
+
+        curl_multi_close($cmh);
+
+        return $responses;
     }
 
     /**
@@ -116,6 +133,7 @@ class CurlHandler
         $ch = $this->initialize($uri, $method, $headers, $params);
 
         $response = curl_exec($ch);
+
         $responseHeaderSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $responseHeaders = substr($response, 0, $responseHeaderSize);
         $responseBody = substr($response, $responseHeaderSize);
@@ -133,21 +151,21 @@ class CurlHandler
     }
 
     /**
-     * @param $responseHeaders
+     * @param string $responseHeaders
      * @return array
      */
     private function formatResponseHeaders($responseHeaders)
     {
         $headers = [];
-
         $requests = substr($responseHeaders, 0, strpos($responseHeaders, "\r\n\r\n"));
         foreach (explode("\r\n", $requests) as $i => $row) {
             if ($i === 0) {
                 $headers['http_code'] = $row;
-            } else {
-                list ($key, $value) = explode(': ', $row);
-                $headers[$key] = $value;
+                continue;
             }
+
+            list ($key, $value) = explode(': ', $row);
+            $headers[$key] = $value;
         }
 
         return $headers;
@@ -162,10 +180,13 @@ class CurlHandler
      */
     private function initialize($uri, $method, $headers, $params)
     {
+        if ($method === 'GET') {
+            $uri .= (strpos('?', $uri) === false ? '?' : '&') . http_build_query($params);
+        }
+
         $ch = curl_init($uri);
 
         curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_HEADER, 1);
