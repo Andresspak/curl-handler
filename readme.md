@@ -28,6 +28,7 @@ $curlHandler->run();
 
 ## Example
 
+### Single request handling
 ```php
 <?php
 
@@ -43,4 +44,26 @@ list(
     $responseHeaders,   // response headers
     $responseData,      // response content
 ) = $curlHandler->get('/', $headers, $params);
+```
+
+### Queued request handling
+```php
+<?php
+
+$headers = [
+    'Content-Type: application/json',
+];
+
+$params = [];
+
+$curlHandler = new CurlHandler('https://example.com'); 
+
+$curlHandler->queue('/api/products', 'GET', $headers, $params);
+$curlHandler->queue('/api/elements', 'GET', $headers, $params);
+
+$bulkResponse = $curlHandler->run();
+
+foreach ($bulkResponse as $response){
+    // TODO: Handle response data
+}
 ```
