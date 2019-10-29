@@ -1,11 +1,14 @@
 {
-    "name": "kurikutsu/curl-handler",
+    "name": "andresspak/curl-handler",
+    "type": "library",
     "description": "Lightweight PHP Curl handler",
+    "keywords": ["curl"],
     "license": "MIT",
     "authors": [
         {
             "name": "Andres Spak",
-            "email": "andresspak@gmail.com"
+            "email": "andresspak@gmail.com",
+            "role": "Developer"
         }
     ],
     "require": {
