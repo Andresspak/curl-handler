@@ -154,7 +154,7 @@ class CurlHandler
         $responseBody = substr($response, $responseHeaderSize);
 
         if (curl_errno($ch)) {
-            throw new Exception(curl_error($ch));
+            throw new \Exception(curl_error($ch));
         }
 
         curl_close($ch);
