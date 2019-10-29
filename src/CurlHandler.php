@@ -1,4 +1,7 @@
 <?php
+
+namespace CurlHandler;
+
 /**
  * Class CurlHandler
  *

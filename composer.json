@@ -11,6 +11,11 @@
             "role": "Developer"
         }
     ],
+  "autoload": {
+    "psr-4": {
+      "CurlHandler\\": "src/"
+    }
+  },
     "require": {
         "ext-curl": "*",
         "ext-json": "*"
