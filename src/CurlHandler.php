@@ -2,6 +2,8 @@
 
 namespace CurlHandler;
 
+use CurlHandler\Exception\CurlHandlerException;
+
 /**
  * Class CurlHandler
  *
@@ -15,7 +17,8 @@ class CurlHandler
 
     /**
      * CurlHandler constructor.
-     * @param string $host
+     *
+     * @param $host
      */
     public function __construct($host)
     {
@@ -27,7 +30,7 @@ class CurlHandler
      * @param array $headers
      * @param array $params
      * @return array
-     * @throws Exception
+     * @throws CurlHandlerException
      */
     public function delete($path = '', $headers = [], $params = [])
     {
@@ -39,7 +42,7 @@ class CurlHandler
      * @param array $headers
      * @param array $params
      * @return array
-     * @throws Exception
+     * @throws CurlHandlerException
      */
     public function get($path = '', $headers = [], $params = [])
     {
@@ -51,7 +54,7 @@ class CurlHandler
      * @param array $headers
      * @param array $params
      * @return array
-     * @throws Exception
+     * @throws CurlHandlerException
      */
     public function post($path = '', $headers = [], $params = [])
     {
@@ -63,7 +66,7 @@ class CurlHandler
      * @param array $headers
      * @param array $params
      * @return array
-     * @throws Exception
+     * @throws CurlHandlerException
      */
     public function put($path = '', $headers = [], $params = [])
     {
@@ -75,7 +78,7 @@ class CurlHandler
      * @param array $headers
      * @param array $params
      * @return array
-     * @throws Exception
+     * @throws CurlHandlerException
      */
     public function patch($path = '', $headers = [], $params = [])
     {
@@ -136,12 +139,12 @@ class CurlHandler
     }
 
     /**
-     * @param $uri string
-     * @param $method string
-     * @param $headers array
-     * @param $params array
+     * @param $uri
+     * @param $method
+     * @param $headers
+     * @param $params
      * @return array
-     * @throws Exception
+     * @throws CurlHandlerException
      */
     private function request($uri, $method, $headers, $params)
     {
@@ -154,7 +157,7 @@ class CurlHandler
         $responseBody = substr($response, $responseHeaderSize);
 
         if (curl_errno($ch)) {
-            throw new \Exception(curl_error($ch));
+            throw new CurlHandlerException(curl_error($ch));
         }
 
         curl_close($ch);
@@ -166,7 +169,7 @@ class CurlHandler
     }
 
     /**
-     * @param string $responseHeaders
+     * @param $responseHeaders
      * @return array
      */
     private function formatResponseHeaders($responseHeaders)
@@ -187,10 +190,10 @@ class CurlHandler
     }
 
     /**
-     * @param string $uri
-     * @param string $method
-     * @param array $headers
-     * @param array $params
+     * @param $uri
+     * @param $method
+     * @param $headers
+     * @param $params
      * @return false|resource
      */
     private function initialize($uri, $method, $headers, $params)

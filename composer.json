@@ -16,5 +16,8 @@
       "CurlHandler\\": "src/"
     }
   },
-    "require": {}
+    "require": {
+      "ext-curl": "*",
+      "ext-json": "*"
+    }
 }
