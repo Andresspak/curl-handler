@@ -13,6 +13,7 @@ $curlHandler->get($path, $headers, $params);
 $curlHandler->post($path, $headers, $params);
 $curlHandler->put($path, $headers, $params);
 $curlHandler->patch($path, $headers, $params);
+$curlHandler->delete($path, $headers, $params);
 ```
 
 ### Queued request

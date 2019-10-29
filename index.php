@@ -26,6 +26,18 @@ class CurlHandler
      * @return array
      * @throws Exception
      */
+    public function delete($path = '', $headers = [], $params = [])
+    {
+        return $this->request($this->host . $path, 'DELETE', $headers, $params);
+    }
+
+    /**
+     * @param string $path
+     * @param array $headers
+     * @param array $params
+     * @return array
+     * @throws Exception
+     */
     public function get($path = '', $headers = [], $params = [])
     {
         return $this->request($this->host . $path, 'GET', $headers, $params);
@@ -196,7 +208,7 @@ class CurlHandler
         } elseif ($method === 'POST') {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-        } elseif ($method === 'PUT' || $method === 'PATCH') {
+        } else {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
         }
